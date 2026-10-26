@@ -1,0 +1,253 @@
+# LinkedIn Job Radar configuration.
+# Every tunable value lives here. Code reads this file; nothing below is hard-coded elsewhere.
+#
+# YAML tip: inside single-quoted strings, write an apostrophe as two apostrophes,
+# so  founder's  becomes  founder''s .
+
+paths:
+  data_dir: data                       # real runs write here (committed to the repo)
+  fixture_data_dir: .fixture_data      # --fixture runs write here (git-ignored)
+  fixture_posts: tests/fixtures/sample_posts.json
+  fixture_judgments: tests/fixtures/stub_judgments.json   # canned judge output for --fixture
+  rubric: jobradar/rubric.md           # read by both judges (Claude and Gemini)
+
+apify:
+  actor: harvestapi/linkedin-post-search
+  api_base: https://api.apify.com/v2
+  posted_limit: week                   # 1h, 24h, week, month (no 3-day option; prefilter trims to 72h)
+  sort_by: date                        # date or relevance
+  max_posts_per_query: 6               # 12 queries x 6 = at most 72 posts per day
+  monthly_post_budget: 2200            # measured $0.002/post on 2026-10-15, so about $4.40 of the $5 credit
+  max_charge_usd_per_run: 0.25         # Apify stops a single run once it costs this much
+  poll_interval_seconds: 10            # pause between retries after a network error
+  run_timeout_seconds: 600             # abort the actor run if it takes longer than this
+  http_retries: 3                      # retries for temporary Apify API errors
+  max_query_chars: 500                 # actor limit, checked when config loads
+  max_boolean_operators: 5             # actor limit (AND / OR / NOT), checked when config loads
+
+queries:
+  - '("founder''s office" OR "founders office") hiring (Gurugram OR Gurgaon OR Delhi OR Noida)'
+  - '("CEO''s office" OR "CEO office") hiring (Delhi OR Gurugram OR Noida)'
+  - '"chief of staff" hiring (Gurugram OR Delhi OR Noida)'
+  - '"entrepreneur in residence" (Delhi OR Gurugram OR NCR)'
+  - '("investment analyst" OR "VC analyst") (Delhi OR Gurugram)'
+  - '"venture capital" analyst hiring (Delhi OR Gurugram OR Noida)'
+  - 'generalist hiring startup (Gurugram OR Delhi OR Noida)'
+  # Broad: location is often only in an image or a JD link, so these have no city filter.
+  - '("founder''s office" OR "founders office") hiring'
+  - '("founder''s office" OR "founders office") hiring fresher'
+  # Added in planning: PE / family office, strategy analyst, associate to founder.
+  - '("private equity" OR "family office" OR "venture debt") analyst hiring (Delhi OR Gurugram)'
+  - '("strategy analyst" OR "business analyst") startup hiring (Gurugram OR Delhi OR Noida)'
+  - '("associate to the founder" OR "founder''s associate" OR "special projects") hiring (Delhi OR Gurugram)'
+
+prefilter:
+  min_chars: 80
+  max_post_age_hours: 72               # the real time window: posts older than 3 days are dropped
+  seen_retention_days: 60
+  max_posts_for_judging: 60
+
+  # Matching rules: case-insensitive; curly quotes become straight; hyphens become spaces
+  # (so "pan-india" and "pan india" both match). Terms match whole words only, so "usa"
+  # does not match "usage" and "role" does not match "control". Add plurals separately.
+
+  # Phrases typical of job seekers. They are also stripped from the text before the hiring
+  # check, so "I am looking for" does not count as the hiring phrase "looking for".
+  seeker_terms:
+    - "#opentowork"
+    - open to work
+    - "i am looking for"
+    - "i'm looking for"
+    - "im looking for"
+    - looking for opportunities
+    - looking for new opportunities
+    - looking for a job
+    - looking for job
+    - actively looking
+    - seeking opportunities
+    - seeking a role
+    - seeking new opportunities
+    - please refer me
+    - refer me
+    - kindly refer
+    - anyone hiring
+    - anyone is hiring
+    - if you are hiring
+    - "if you're hiring"
+    - team is hiring
+    - company is hiring
+    - know of any openings
+    - job seeker
+
+  # Strong: the poster is clearly hiring. A seeker post is kept only if it has one of these.
+  hiring_terms_strong:
+    - "we're hiring"
+    - we are hiring
+    - "i'm hiring"
+    - i am hiring
+    - "#hiring"
+    - hiring for
+    - "we're looking for"
+    - we are looking for
+    - join our team
+    - join us
+    - send your resume
+    - send your cv
+    - share your resume
+    - share your cv
+    - drop your resume
+    - drop your cv
+    - email your resume
+    - email your cv
+    - apply here
+    - apply now
+    - apply via
+    - apply at
+    - apply using
+    - applications open
+    - applications are open
+    - jd
+    - job description
+    - dm me your
+
+  # Weak: suggests hiring but also appears in other posts. Any strong OR weak term passes
+  # the "must look like a hiring post" check.
+  hiring_terms_weak:
+    - hiring
+    - looking for
+    - apply
+    - opening
+    - openings
+    - role
+    - roles
+    - position
+    - positions
+    - vacancy
+    - vacancies
+    - dm me
+    - send me
+
+  location:
+    ncr_terms:
+      - delhi
+      - new delhi
+      - ncr
+      - delhi ncr
+      - gurugram
+      - gurgaon
+      - noida
+      - greater noida
+      - faridabad
+      - ghaziabad
+    remote_india_terms:
+      - remote india
+      - remote (india)
+      - remote, india
+      - remote within india
+      - remote in india
+      - india remote
+      - anywhere in india
+      - pan india
+      - work from home
+      - wfh
+    other_terms:
+      - bangalore
+      - bengaluru
+      - mumbai
+      - navi mumbai
+      - pune
+      - hyderabad
+      - chennai
+      - kolkata
+      - ahmedabad
+      - jaipur
+      - chandigarh
+      - kochi
+      - indore
+      - lucknow
+      - london
+      - dubai
+      - abu dhabi
+      - uae
+      - riyadh
+      - saudi
+      - singapore
+      - usa
+      - united states
+      - new york
+      - nyc
+      - san francisco
+      - bay area
+      - uk
+      - united kingdom
+      - canada
+      - toronto
+      - australia
+      - sydney
+      - germany
+      - berlin
+      - europe
+
+  # Dropped before the judge and logged with the matching term.
+  hard_scam_terms:
+    - registration fee
+    - security deposit
+    - refundable deposit
+    - training fee
+    - joining fee
+    - "pay ₹"
+    - processing fee
+    - "t.me/"
+    - telegram.me
+    - earn from home
+    - daily payout
+
+  # Kept, but passed to the judge as prefilter_flags.
+  soft_scam_terms:
+    - whatsapp
+    - wa.me
+    - bulk hiring
+    - immediate joining
+    - no interview
+    - "@gmail.com"
+    - google form
+    - forms.gle
+    - aadhaar
+    - aadhar
+    - pan card
+    - guaranteed
+    - 100% placement
+
+judge:
+  summary_max_words: 20                # longer summary / why lines are trimmed
+  # Mode B fallback judge (GitHub Actions). Checked against Google's docs on 2026-10-15:
+  # gemini-2.5-flash is now limited to past users, so new keys use the 3.x models below.
+  gemini:
+    api_base: https://generativelanguage.googleapis.com/v1beta
+    models: [gemini-3.8-flash, gemini-3.5-flash-lite]   # tried in order if one is unavailable
+    batch_size: 8                      # posts per request (halved on the retry pass)
+    requests_per_minute: 8             # free-tier limits vary by account; see AI Studio
+    max_retries: 4                     # per request, on 429 / 5xx, with backoff
+    temperature: 0.2
+    timeout_seconds: 120
+  # Hard caps from the rubric, enforced again in code as a safety net.
+  caps:
+    not_hiring_post: 2
+    outside_india_or_other_city: 3     # location other_india or outside_india
+    fresher_fit_no: 4
+    vc_non_investment: 4
+    scam_risk_high: 2
+    job_aggregator: 8                  # also marked "verify at source"
+
+digest:
+  top_pick_min: 7                      # Top picks: relevance 7 or more
+  worth_a_look_min: 5                  # Worth a look: 5 to 6 ...
+  unknown_location_min: 4              # ... plus unknown-location posts scoring at least this
+
+tracker:
+  backend: sheet                       # sheet (Google Sheet via Apps Script) or csv
+  min_relevance: 5                     # posts scoring this or more are added
+  csv_file: tracker.csv                # inside the data dir; used for --fixture or if the Sheet is not set up
+  unsent_file: tracker_unsent.csv      # rows that failed to reach the Sheet; retried next run
+  sheet_timeout_seconds: 30
+  statuses: [applied, dm_sent, skip, not_relevant]

@@ -1,0 +1,104 @@
+{
+  "7384000000000000001": {
+    "is_hiring_post": true, "role_category": "founders_office",
+    "role_title": "Associate, Founder's Office", "company": "Kettlebrook Foods",
+    "location": "ncr", "location_detail": "Gurugram, Sector 44, in office",
+    "fresher_fit": "yes", "poster_type": "founder_or_exec",
+    "apply_method": "Email resume and note to careers@kettlebrookfoods.in",
+    "scam_risk": "low", "scam_reasons": [], "relevance": 9,
+    "summary": "Founder's Office associate at a Series A D2C snacks brand, working directly with the CEO.",
+    "why": "Target role in Gurugram, freshers welcome, CEO posting with company email."
+  },
+  "7384000000000000002": {
+    "is_hiring_post": true, "role_category": "vc_investment",
+    "role_title": "Investment Analyst", "company": "Northgate Ventures",
+    "location": "ncr", "location_detail": "Gurugram",
+    "fresher_fit": "yes", "poster_type": "founder_or_exec",
+    "apply_method": "northgate.vc/careers or DM the partner",
+    "scam_risk": "low", "scam_reasons": [], "relevance": 9,
+    "summary": "Investment analyst at an early-stage fund: sourcing, market maps, investment memos.",
+    "why": "VC investment role in Gurugram, 0 to 2 years, partner is the poster."
+  },
+  "7384000000000000003": {
+    "is_hiring_post": true, "role_category": "vc_non_investment",
+    "role_title": "Marketing and Community Associate", "company": "Lattice Capital",
+    "location": "ncr", "location_detail": "New Delhi",
+    "fresher_fit": "maybe", "poster_type": "employee",
+    "apply_method": "Form on latticecapital.in/careers",
+    "scam_risk": "low", "scam_reasons": [], "relevance": 6,
+    "summary": "Marketing, newsletter and community role at a Delhi VC fund.",
+    "why": "Fund role but not investment team; needs 1 to 3 years in content."
+  },
+  "7384000000000000007": {
+    "is_hiring_post": true, "role_category": "other",
+    "role_title": "Business Development / Operations Executive", "company": "",
+    "location": "ncr", "location_detail": "Delhi",
+    "fresher_fit": "yes", "poster_type": "recruiter_agency",
+    "apply_method": "WhatsApp CV to a phone number",
+    "scam_risk": "high",
+    "scam_reasons": ["WhatsApp is the only way to apply", "no interview, immediate joining", "no company named"],
+    "relevance": 3,
+    "summary": "Bulk hiring for BD and ops executives with no company or JD.",
+    "why": "Off target and shows several scam signals."
+  },
+  "7384000000000000009": {
+    "is_hiring_post": true, "role_category": "founders_office",
+    "role_title": "Associate, Founder's Office", "company": "Mosaic Health",
+    "location": "ncr", "location_detail": "Noida",
+    "fresher_fit": "yes", "poster_type": "job_aggregator",
+    "apply_method": "Form at mosaichealth.in/join (from the original post)",
+    "scam_risk": "low", "scam_reasons": [], "relevance": 9,
+    "summary": "Founder's Office associate at Mosaic Health, reposted by a jobs page.",
+    "why": "Target role in Noida for 0 to 1 years; original founder post looks genuine."
+  },
+  "7384000000000000010": {
+    "is_hiring_post": true, "role_category": "ceo_office",
+    "role_title": "Analyst, CEO's Office", "company": "Ledgerline",
+    "location": "remote_india", "location_detail": "Remote within India",
+    "fresher_fit": "yes", "poster_type": "employee",
+    "apply_method": "ledgerline.co/careers/ceo-office",
+    "scam_risk": "low", "scam_reasons": [], "relevance": 9,
+    "summary": "CEO's Office analyst at a Series B fintech: strategic projects, board materials, OKRs.",
+    "why": "Target role, remote within India, open to freshers, posted by the Chief of Staff."
+  },
+  "7384000000000000011": {
+    "first": {
+      "is_hiring_post": true, "role_category": "founders office",
+      "role_title": "Founder's Office", "company": "Paperkite",
+      "location": "somewhere in India", "location_detail": "",
+      "fresher_fit": "yes", "poster_type": "founder_or_exec",
+      "apply_method": "DM the founder", "scam_risk": "low", "scam_reasons": [],
+      "relevance": "high", "summary": "Founder's Office at a seed fintech.", "why": "Good fit."
+    },
+    "retry": {
+      "is_hiring_post": true, "role_category": "founders_office",
+      "role_title": "Founder's Office", "company": "Paperkite",
+      "location": "unknown", "location_detail": "Not stated",
+      "fresher_fit": "yes", "poster_type": "founder_or_exec",
+      "apply_method": "DM the founder your resume and a short note",
+      "scam_risk": "low", "scam_reasons": [], "relevance": 7,
+      "summary": "Founder's Office generalist at a seed-stage fintech for small merchants.",
+      "why": "Target role and fresher friendly, but location is not stated."
+    }
+  },
+  "7384000000000000013": {
+    "is_hiring_post": true, "role_category": "vc_investment",
+    "role_title": "Investment Analyst", "company": "Saltwater Family Office",
+    "location": "ncr", "location_detail": "Gurugram",
+    "fresher_fit": "maybe", "poster_type": "employee",
+    "apply_method": "Email CV to invest@saltwaterfo.in, subject 'Analyst'",
+    "scam_risk": "low", "scam_reasons": [], "relevance": 8,
+    "summary": "Family office investment analyst: direct deals, fund commitments, models, portfolio tracking.",
+    "why": "Investment role in Gurugram; 0 to 2 years with CA or CFA preferred."
+  },
+  "7384000000000000014": {
+    "is_hiring_post": true, "role_category": "strategy_bizops",
+    "role_title": "Strategy Analyst", "company": "Brightwater Logistics",
+    "location": "ncr", "location_detail": "Noida",
+    "fresher_fit": "maybe", "poster_type": "employee",
+    "apply_method": "Link in the post's comments",
+    "scam_risk": "low", "scam_reasons": [], "relevance": 6,
+    "summary": "Strategy analyst on pricing and network expansion at a Series B logistics company.",
+    "why": "Adjacent strategy role; prefers 1 to 3 years of experience."
+  }
+}

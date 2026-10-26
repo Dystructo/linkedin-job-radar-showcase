@@ -1,0 +1,84 @@
+# Mode B fallback: fetch, prefilter, judge with Gemini, write the digest, commit data/ to main.
+#
+# The Claude routine (Mode A) is the primary daily run at 7:37 AM IST. This workflow is the
+# safety net:
+#   - Scheduled runs happen only when the repository variable MODE_B_ENABLED is "true"
+#     (Settings > Secrets and variables > Actions > Variables).
+#   - It runs at 03:37 UTC (9:07 AM IST) and skips itself if today's digest already exists,
+#     so a successful routine run is never repeated and Apify credit is not spent twice.
+#   - "Run workflow" (workflow_dispatch) always works; tick "force" to run even if today's
+#     digest exists.
+# Secrets needed: APIFY_TOKEN, GEMINI_API_KEY. Optional: SHEET_WEBAPP_URL, SHEET_SHARED_SECRET.
+
+name: Job Radar (Mode B fallback)
+
+on:
+  schedule:
+    - cron: "37 3 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Run even if today's digest already exists"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: job-radar
+  cancel-in-progress: false
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: github.event_name == 'workflow_dispatch' || vars.MODE_B_ENABLED == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Skip if today's digest exists
+        id: check
+        run: |
+          today=$(TZ=Asia/Kolkata date +%F)
+          echo "today=$today" >> "$GITHUB_OUTPUT"
+          if [ -f "data/digests/$today.md" ] && [ "${{ inputs.force }}" != "true" ]; then
+            echo "Digest for $today already exists (the routine ran). Skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-python@v5
+        if: steps.check.outputs.skip != 'true'
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        if: steps.check.outputs.skip != 'true'
+        run: pip install -r requirements.txt
+
+      - name: Run pipeline
+        if: steps.check.outputs.skip != 'true'
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SHEET_WEBAPP_URL: ${{ secrets.SHEET_WEBAPP_URL }}
+          SHEET_SHARED_SECRET: ${{ secrets.SHEET_SHARED_SECRET }}
+        run: python -m jobradar run
+
+      - name: Commit data to main
+        if: always() && steps.check.outputs.skip != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "No data changes to commit."
+            exit 0
+          fi
+          picks=$(head -n 1 "data/digests/${{ steps.check.outputs.today }}.md" 2>/dev/null | sed 's/^# //')
+          git commit -m "${picks:-Job Radar ${{ steps.check.outputs.today }}} (Mode B)"
+          git pull --rebase origin main
+          git push origin HEAD:main
